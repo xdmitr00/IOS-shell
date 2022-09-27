@@ -1,0 +1,229 @@
+#!/bin/sh
+dar=`pwd`
+normali=0
+ig=0
+case $# in
+	0);; 
+	1)if [ -d "$1" ];
+	  then
+	  dar=$1
+	  elif [ "$1" = "-n" ];
+	  then
+	  normali=1
+	  else
+          echo "chyba"
+	  exit 3
+	  fi;;
+        2) if [ "$1" = "-i" ];
+	   then 
+     	   case $dar in
+        *"$2"*)
+        echo "chyba"
+        exit 10;;
+        *)
+        filerr=$2
+        ig=1;;
+	esac
+	elif [ "$1" = "-n" ] && [ -d "$2" ];
+	then 
+	normali=1
+	dar=$2  
+	else 
+	echo "chyba"
+	exit 4
+	fi;;
+	3) if [ "$1" = "-i" ] && [ "$3" = "-n" ]; 
+	   then
+	   case $dar in
+        *"$2"*)
+        echo "chyba"
+        exit 10;;
+        *)
+        filerr=$2
+        ig=1;;
+        esac
+	normali=1
+	elif [ "$1" = "-i" ] && [ -d "$3" ];
+	then 
+	dar=$3
+	case $dar in
+        *"$2"*)
+        echo "chyba"
+        exit 10;;
+        *)
+        filerr=$2
+        ig=1;;
+        esac 
+	else
+	echo "chyba"
+ 	exit 8
+	fi;;
+	4)if [ "$1" = "-i" ] && [ "$3" = "-n" ] && [ -d "$4" ];
+	  then
+	  dar=$4
+	  case $dar in
+        *"$2"*)
+        echo "chyba"
+        exit 10;;
+        *)
+        filerr=$2
+        ig=1;;
+        esac
+	normali=1
+	else 
+	echo "chyba"
+	exit 6
+	fi;;	
+	*)echo "chyba"
+	 exit 12;;
+	 esac 
+
+
+
+
+echo "Root directory:$dar"
+if [ $ig -eq 1 ];
+then
+	dir=`find $dar -type d 2>/dev/null | grep -v -E "($filerr)" |wc -l`
+else 
+	dir=`find $dar -type d 2>/dev/null |wc -l`
+fi
+echo "Directories:$dir"
+if [ $ig -eq 1 ];
+then
+dav=`find $dar 2>/dev/null | grep -v -E "($filerr)" | wc -l`
+else
+	dav=`find $dar 2>/dev/null | wc -l`
+fi
+echo "All files:$dav"
+echo "File size histogram:"
+ echo -n "  <100 B  : "
+if [ $normali -eq 1 ]; 
+then
+if [ -t 1 ];
+then
+NF=`tput cols`
+else 
+NF=67
+fi
+fi
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size -100c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi    
+if [ $ig -eq 0 ];
+then 
+find $dar -size -100c 2>/dev/null | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else 
+find $dar -size -100c 2>/dev/null | grep -v -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+fi
+echo
+ echo -n "  <1 KiB  : "
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size -1024c -size +99c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi
+if [ $ig -eq 0 ];
+then                                                                                                                                                                                             
+find $dar -size -1024c -size +99c 2>/dev/null | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else 
+find $dar -size -1024c -size +99c 2>/dev/null | grep -v -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+fi
+ echo
+ echo -n "  <10 KiB : "
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size -10240c -size +1023c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi
+if [ $ig -eq 0 ];
+then
+find $dar -size -10240c -size +1023c 2>/dev/null | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else
+find $dar -size -10240c -size +1023c 2>/dev/null | grep -v -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}' 
+fi
+echo
+ echo -n "  <100 KiB: "
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size -102400c -size +10239c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi
+if [ $ig -eq 0 ];
+then
+ find $dar -size -102400c -size +10239c 2>/dev/null |  awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else 
+find $dar -size -102400c -size +10239c 2>/dev/null | grep -v -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}' 
+fi
+echo
+ echo -n "  <1 MiB  : "
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size -1048576c -size +102399c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi
+if [ $ig -eq 0 ];
+then
+ find $dar -size -1048576c -size +102399c 2>/dev/null | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else
+  find $dar -size -1048576c -size +102399c 2>/dev/null | grep -v  -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}' 
+fi
+echo
+ echo -n "  <10 MiB : "
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size -10485760c -size +1048575c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi
+if [ $ig -eq 0 ];
+then 
+ find $dar -size -10485760c -size +1048575c 2>/dev/null |  awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else
+ find $dar -size -10485760c -size +1048575c 2>/dev/null | grep -v -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}' 
+fi
+echo
+ echo -n "  <100 MiB: "
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size -104857600c -size +10485759c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi
+if [ $ig -eq 0 ];
+then
+ find $dar -size -104857600c -size +10485759c 2>/dev/null |  awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else
+ find $dar -size -104857600c -size +10485759c 2>/dev/null | grep -v -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}' 
+fi
+echo
+ echo -n "  <1 GiB  : "
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size -1073741823c -size +104857599c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi
+if [ $ig -eq 0 ];
+then
+ find $dar -size -1073741823c -size +104857599c 2>/dev/null | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else 
+ find $dar -size -1073741823c -size +104857599c 2>/dev/null | grep -v -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}' 
+fi
+echo
+ echo -n "  >=1 GiB : "
+if [ $normali -eq 0 ];
+then
+NF=`find $dar -size +1073741823c 2>/dev/null | wc -l`
+NF=$((NF+12))
+fi
+if [ $ig -eq 0 ];
+then
+ find $dar -size +1073741823c 2>/dev/null |  awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+else 
+ find $dar -size +1073741823c 2>/dev/null | grep -v -E "($filerr)" | awk -v N=$NF '{N--;if(N>=12) {printf "#";}}'
+fi
+echo 
+exit 0
+
+
+
