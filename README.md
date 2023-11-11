@@ -1,7 +1,14 @@
 # IOS-shell
 
-School projects from course Operating Systems
+# Directory Exploration Script
 
-Cílem úlohy je vytvořit skript, který prozkoumá adresář a vytvoří report o jeho obsahu. Předmětem rekurzivního
-zkoumání adresáře je počet souborů a adresářů a velikosti souborů. Výstupem skriptu je textový report. Skript je
-konfigurovatelný pomocí příkazové řádky.
+This script explores a directory and generates a report about its contents. It recursively examines the directory for the number of files and subdirectories and their respective sizes. The script is configurable through the command line.
+
+## Usage
+
+```bash
+./dirgraph [OPTIONS] [DIRECTORY]
+
+Options:
+-n: Print only the total number of files and directories.
+-i FILE: Ignore the specified file or directory.
